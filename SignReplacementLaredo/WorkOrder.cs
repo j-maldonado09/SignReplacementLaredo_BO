@@ -67,7 +67,8 @@ namespace SignReplacementLaredo
             _strQuery.Append("DIST_CNTCT_APRV_ID, ");
             _strQuery.Append("WRK_ORDR_DIST_APRV_DT, ");
             _strQuery.Append("WRK_ORDR_SIGN_RCVD_DT, ");
-            _strQuery.Append("WRK_ORDR_SIGN_INST_DT");
+            _strQuery.Append("WRK_ORDR_SIGN_INST_DT, ");
+            _strQuery.Append("WRK_ORDR_STAT");
             _strQuery.Append(") OUTPUT inserted.WRK_ORDR_ID ");
             _strQuery.Append("VALUES (");
             _strQuery.Append("@prm_number, ");
@@ -89,7 +90,8 @@ namespace SignReplacementLaredo
             _strQuery.Append("@prm_dist_cntct_aprv, ");
             _strQuery.Append("@prm_work_order_dist_aprv_date, ");
             _strQuery.Append("@prm_work_order_sign_rcvd_date, ");
-            _strQuery.Append("@prm_work_order_sign_inst_date");
+            _strQuery.Append("@prm_work_order_sign_inst_date, ");
+            _strQuery.Append("@prm_work_order_status");
             _strQuery.Append(")");
 
             _queryParams.Clear();
@@ -113,6 +115,7 @@ namespace SignReplacementLaredo
             _queryParams.Add("prm_work_order_dist_aprv_date", entity.ApprovedByDistrictDate is null ? DBNull.Value : entity.ApprovedByDistrictDate);
             _queryParams.Add("prm_work_order_sign_rcvd_date", entity.SignReceivedDate is null ? DBNull.Value : entity.SignReceivedDate);
             _queryParams.Add("prm_work_order_sign_inst_date", entity.SignInstalledDate is null ? DBNull.Value : entity.SignInstalledDate);
+            _queryParams.Add("prm_work_order_status", entity.Status is null ? DBNull.Value : entity.Status);
 
             int sequenceValue = (int)_unitOfWork.ExecuteScalar(_strQuery.ToString(), _queryParams);
 
@@ -207,11 +210,17 @@ namespace SignReplacementLaredo
             _strQuery.Append("CASE ");
             _strQuery.Append("WHEN WRK_ORDR_SIGN_INST_DT IS NOT NULL THEN 'INSTALLED' ");
             _strQuery.Append("WHEN WRK_ORDR_SIGN_RCVD_DT IS NOT NULL THEN 'RECEIVED' ");
-            _strQuery.Append("WHEN MAINT_SECT_SUPV_APRV_ID IS NULL AND DIST_CNTCT_APRV_ID IS NULL THEN 'CREATED' ");
-            _strQuery.Append("WHEN DIST_CNTCT_APRV_ID IS NULL THEN 'REQUESTED' ");
-            _strQuery.Append("ELSE 'APPROVED' ");
+            _strQuery.Append("ELSE WRK_ORDR_STAT ");
             _strQuery.Append("END AS Status ");
-            
+
+            //_strQuery.Append("CASE ");
+            //_strQuery.Append("WHEN WRK_ORDR_SIGN_INST_DT IS NOT NULL THEN 'INSTALLED' ");
+            //_strQuery.Append("WHEN WRK_ORDR_SIGN_RCVD_DT IS NOT NULL THEN 'RECEIVED' ");
+            //_strQuery.Append("WHEN MAINT_SECT_SUPV_APRV_ID IS NULL AND DIST_CNTCT_APRV_ID IS NULL THEN 'CREATED' ");
+            //_strQuery.Append("WHEN DIST_CNTCT_APRV_ID IS NULL THEN 'REQUESTED' ");
+            //_strQuery.Append("ELSE 'APPROVED' ");
+            //_strQuery.Append("END AS Status ");
+
             _strQuery.Append("FROM WRK_ORDR ");
 
             _strQuery.Append("INNER JOIN REGN_DSTR_CNTR ON REGN_DSTR_CNTR.REGN_DSTR_CNTR_ID = WRK_ORDR.REGN_DSTR_CNTR_ID ");
@@ -268,6 +277,7 @@ namespace SignReplacementLaredo
             _strQuery.Append("WRK_ORDR_DIST_APRV_DT AS ApprovedByDistrictDate, ");
             _strQuery.Append("WRK_ORDR_SIGN_RCVD_DT AS SignReceivedDate, ");
             _strQuery.Append("WRK_ORDR_SIGN_INST_DT AS SignInstalledDate, ");
+            _strQuery.Append("WRK_ORDR_STAT AS Status, ");
             _strQuery.Append("Items.WRK_ORDR_ITEM_ID AS ItemId, ");
             //_strQuery.Append("NIGP_ID AS NIGPId, ");
             _strQuery.Append("NIGP AS NIGP, ");
@@ -328,7 +338,8 @@ namespace SignReplacementLaredo
             _strQuery.Append("DIST_CNTCT_APRV_ID = @prm_dist_cntct_aprv, ");
             _strQuery.Append("WRK_ORDR_DIST_APRV_DT = @prm_work_order_dist_aprv_date, ");
             _strQuery.Append("WRK_ORDR_SIGN_RCVD_DT = @prm_work_order_sign_rcvd_date, ");
-            _strQuery.Append("WRK_ORDR_SIGN_INST_DT = @prm_work_order_sign_inst_date ");
+            _strQuery.Append("WRK_ORDR_SIGN_INST_DT = @prm_work_order_sign_inst_date, ");
+            _strQuery.Append("WRK_ORDR_STAT = @prm_work_order_status ");
             _strQuery.Append("WHERE ");
             _strQuery.Append("WRK_ORDR_ID = @prm_id");
 
@@ -354,6 +365,7 @@ namespace SignReplacementLaredo
             _queryParams.Add("prm_work_order_dist_aprv_date", entity.ApprovedByDistrictDate is null ? DBNull.Value : entity.ApprovedByDistrictDate);
             _queryParams.Add("prm_work_order_sign_rcvd_date", entity.SignReceivedDate is null ? DBNull.Value : entity.SignReceivedDate);
             _queryParams.Add("prm_work_order_sign_inst_date", entity.SignInstalledDate is null ? DBNull.Value : entity.SignInstalledDate);
+            _queryParams.Add("prm_work_order_status", entity.Status is null ? DBNull.Value : entity.Status);
 
             _unitOfWork.ExecuteNonQuery(_strQuery.ToString(), _queryParams);
 

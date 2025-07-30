@@ -29,6 +29,7 @@ namespace SignReplacementLaredo.HelperModels
         public DateTime? ApprovedByDistrictDate { get; set; }
         public DateTime? SignReceivedDate { get; set; }
         public DateTime? SignInstalledDate { get; set; }
+        public string? Status { get; set; }
 
         ////public int SignShop { get; set; }
         public List<WorkOrderItemHelperModel> Items { get; set; }
